@@ -9,10 +9,13 @@ import android.graphics.Paint;
  */
 public class TileLine {
 
+    private static int points = 0;
+
     public static final int LEFT = 0;
     public static final int CENTERLEFT = 1;
     public static final int CENTERRIGHT = 2;
     public static final int RIGHT = 3;
+    public static final int EMPTY = 4;
 
     public static final int TILESPERLINE = 4;
     public static final int MAXLINES = 5;
@@ -23,6 +26,7 @@ public class TileLine {
     private final float tileHeight;
 
     private boolean toRemove;
+    private boolean clicked;
 
     private final int alignment;
 
@@ -63,31 +67,39 @@ public class TileLine {
         white.setColor(Color.WHITE);
         Paint black = new Paint();
         black.setColor(Color.BLACK);
+        Paint gray = new Paint();
+        gray.setColor(Color.GRAY);
 
         switch(alignment){
             case LEFT:
-                canvas.drawRect(3            , Y, tileWidth     - 3, finalY -3, black);
+                canvas.drawRect(3            , Y, tileWidth     - 3, finalY -3, (wasClicked() ? gray : black));
                 canvas.drawRect(tileWidth    , Y, tileWidth * 2 - 3, finalY -3, white);
                 canvas.drawRect(tileWidth * 2, Y, tileWidth * 3 - 3, finalY -3, white);
                 canvas.drawRect(tileWidth * 3, Y, panelWidth    - 3, finalY -3, white);
                 break;
             case CENTERLEFT:
                 canvas.drawRect(3            , Y, tileWidth     - 3, finalY -3, white);
-                canvas.drawRect(tileWidth    , Y, tileWidth * 2 - 3, finalY -3, black);
+                canvas.drawRect(tileWidth    , Y, tileWidth * 2 - 3, finalY -3, (wasClicked() ? gray : black));
                 canvas.drawRect(tileWidth * 2, Y, tileWidth * 3 - 3, finalY -3, white);
                 canvas.drawRect(tileWidth * 3, Y, panelWidth    - 3, finalY -3, white);
                 break;
             case CENTERRIGHT:
                 canvas.drawRect(3            , Y, tileWidth     - 3, finalY -3, white);
                 canvas.drawRect(tileWidth    , Y, tileWidth * 2 - 3, finalY -3, white);
-                canvas.drawRect(tileWidth * 2, Y, tileWidth * 3 - 3, finalY -3, black);
+                canvas.drawRect(tileWidth * 2, Y, tileWidth * 3 - 3, finalY -3, (wasClicked() ? gray : black));
                 canvas.drawRect(tileWidth * 3, Y, panelWidth    - 3, finalY -3, white);
                 break;
             case RIGHT:
                 canvas.drawRect(3            , Y, tileWidth     - 3, finalY -3, white);
                 canvas.drawRect(tileWidth    , Y, tileWidth * 2 - 3, finalY -3, white);
                 canvas.drawRect(tileWidth * 2, Y, tileWidth * 3 - 3, finalY -3, white);
-                canvas.drawRect(tileWidth * 3, Y, panelWidth    - 3, finalY -3, black);
+                canvas.drawRect(tileWidth * 3, Y, panelWidth    - 3, finalY -3, (wasClicked() ? gray : black));
+                break;
+            case EMPTY:
+                canvas.drawRect(3            , Y, tileWidth     - 3, finalY -3, white);
+                canvas.drawRect(tileWidth    , Y, tileWidth * 2 - 3, finalY -3, white);
+                canvas.drawRect(tileWidth * 2, Y, tileWidth * 3 - 3, finalY -3, white);
+                canvas.drawRect(tileWidth * 3, Y, panelWidth    - 3, finalY -3, white);
                 break;
         }
     }
@@ -102,5 +114,50 @@ public class TileLine {
 
     public boolean isToRemove() {
         return toRemove;
+    }
+
+    public boolean wasClicked(float x, float y){
+        if(y >= Y && y <= finalY)
+            switch (alignment) {
+                case LEFT:
+                    if (x >= 0 && x <= tileWidth) {
+                        setClicked(true);
+                        return true;
+                    }
+                    break;
+                case CENTERLEFT:
+                    if (x >= tileWidth && x <= tileWidth * 2) {
+                        setClicked(true);
+                        return true;
+                    }
+                    break;
+                case CENTERRIGHT:
+                    if (x >= tileWidth * 2 && x <= tileWidth * 3) {
+                        setClicked(true);
+                        return true;
+                    }
+                    break;
+                case RIGHT:
+                    if (x >= tileWidth * 3 && x <= panelWidth) {
+                        setClicked(true);
+                        return true;
+                    }
+                    break;
+            }
+        return false;
+    }
+
+    public boolean wasClicked(){
+        return clicked;
+    }
+
+    private void setClicked(boolean clicked){
+        if(wasClicked()) return;
+        points++;
+        this.clicked = clicked;
+    }
+
+    public static int getPoints(){
+        return points;
     }
 }

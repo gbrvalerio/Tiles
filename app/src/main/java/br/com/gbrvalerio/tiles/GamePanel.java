@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -41,6 +42,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update() {
         flow.update();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        final float x = event.getX();
+        final float y = event.getY();
+        flow.verifyClicked(x, y);
+
+        return super.onTouchEvent(event);
     }
 
     @Override

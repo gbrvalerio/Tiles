@@ -24,32 +24,47 @@ public class TileFlow {
         panelWidth = panel.getWidth();
         panelHeight = panel.getHeight();
 
-        for(int i=0; i < 6 ; i++){
-            lines.add(new TileLine(rand.nextInt(3), i, panelWidth, panelHeight, -20));
+        for(int i=0; i < 5 ; i++){
+            lines.add(new TileLine(TileLine.EMPTY, i, panelWidth, panelHeight, -20));
         }
+        lines.add(new TileLine(rand.nextInt(3), 5.0f, panelWidth, panelHeight, -20));
     }
 
     public void update(){
-        if(lines.size() < 6){
-            lines.add(new TileLine(rand.nextInt(3), 5.0f, panelWidth, panelHeight, -20));
-        }
-        final int size = lines.size();
-        for(int i=0; i < size; i++){
-            TileLine line = lines.get(i);
-            line.update();
-            if(line.isCompletelyOffScreen()){
-                if(line.isToRemove()){
-                    lines.remove(0);
-                    break;
-                } else
-                    line.setToRemove(true);
+        synchronized (lines){
+            if(lines.size() < 6){
+                lines.add(new TileLine(rand.nextInt(3), 5.0f, panelWidth, panelHeight, -20));
+            }
+            final int size = lines.size();
+            for(int i=0; i < size; i++){
+                TileLine line = lines.get(i);
+                line.update();
+                if(line.isCompletelyOffScreen()){
+                    if(line.isToRemove()){
+                        lines.remove(0);
+                        break;
+                    } else
+                        line.setToRemove(true);
+                }
             }
         }
+
     }
 
     public void draw(Canvas canvas){
 //        if(lines.size() == 6)
+        synchronized (lines){
             for(TileLine line : lines) line.draw(canvas);
+        }
+    }
+
+    public void verifyClicked(float x, float y){
+        synchronized (lines){
+            for(TileLine line : lines){
+                if(line.wasClicked(x, y)) break;
+            }
+        }
+
     }
 
 }
