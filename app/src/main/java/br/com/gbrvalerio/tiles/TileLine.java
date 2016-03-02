@@ -30,7 +30,7 @@ public class TileLine {
 
     private final int alignment;
 
-    private float YoffSet;
+    private static float speed;
     private float Y;
     private float finalY;
 
@@ -54,12 +54,20 @@ public class TileLine {
         tileWidth = (this.panelWidth / TILESPERLINE);
 
         Y = tileHeight * pos;
-        this.YoffSet = YoffSet;
+        TileLine.speed = YoffSet;
     }
 
     public void update(){
-        Y += YoffSet;
+        Y += TileLine.speed;
         finalY = Y + tileHeight;
+    }
+
+    public static void setSpeed(float speed){
+        TileLine.speed = speed;
+    }
+
+    public static float getSpeed(){
+        return TileLine.speed;
     }
 
     public void draw(Canvas canvas){
@@ -154,7 +162,9 @@ public class TileLine {
     private void setClicked(boolean clicked){
         if(wasClicked()) return;
         points++;
+        setSpeed(-30 - (points/2.0f));
         this.clicked = clicked;
+        System.out.println("pts: "+ points + " | speed: "+ TileLine.speed);
     }
 
     public static int getPoints(){
